@@ -1,0 +1,216 @@
+Plant Disease Identification — Midterm Presentation
+Speaking Notes (5 presenters)
+===================================================
+
+How to use this file
+--------------------
+- Each person has a 2–4 minute script.
+- Replace anything in [BRACKETS] with your real values (e.g., #classes, best model, accuracy).
+- If you are using a 15-slide deck, the “Slides” hints map to typical sections. Adjust slide numbers to your deck.
+- Keep pace: do not read word-for-word; speak naturally and point to the slide visuals.
+
+
+PERSON 1 — INTRO + DATASET (Problem framing)
+--------------------------------------------
+Target time: ~2.5–3.5 minutes
+Slides: Title, Motivation, Problem, Dataset + sample images
+
+Script:
+1) Greeting + title (10–15s)
+   “Good [morning/afternoon], we’re presenting our project on Plant Leaf Disease Classification
+   using deep learning and transfer learning. The key focus for this midterm is a comparative study
+   of multiple pretrained CNN backbones.”
+
+2) Motivation (30–45s)
+   “Plant diseases directly impact crop yield and food security. In real farms, identifying disease early
+   helps farmers choose the right treatment and avoid spread. Manual inspection is time-consuming and
+   depends heavily on expertise, so computer vision can help scale the screening process.”
+
+3) Problem statement (30–45s)
+   “Formally, our input is an RGB image of a leaf. Our output is one class label representing either a
+   specific disease or a healthy leaf category. We frame this as supervised multi-class image classification.”
+
+4) Dataset overview (60–90s)
+   “For the midterm, our professor provided the dataset named:
+   Plant_leave_diseases_dataset_with_augmentation.
+   The dataset is organized in folders where each folder is one class, so labeling is straightforward.
+   In our pipeline, we load images using TensorFlow’s image_dataset_from_directory.
+   We resize every image to 224 by 224, and we use a batch size of 24.”
+
+   “We split the dataset into training and validation sets using a fixed seed to keep the split consistent across all models.
+   This is important because the whole comparison depends on fairness—every model sees the same data split.”
+
+5) Show sample images (20–30s)
+   “Here are sample images from the dataset. You can see different crops and different disease patterns.
+   This visual variety is exactly why we want to test multiple architectures.”
+
+Handoff (10s)
+   “Next, [Person 2] will explain the transfer learning approach and the shared training setup we used for every model.”
+
+
+PERSON 2 — METHODOLOGY (Transfer learning + training setup)
+-----------------------------------------------------------
+Target time: ~3–4 minutes
+Slides: Transfer learning pipeline, preprocessing, training configuration / fairness
+
+Script:
+1) Transfer learning idea (45–60s)
+   “We use transfer learning because training a large CNN from scratch requires huge datasets and compute.
+   Instead, we start with backbones pretrained on ImageNet. These backbones already learn useful features
+   like edges, textures, and shapes. For plant diseases, these low- and mid-level features transfer well.”
+
+2) Model construction (60–90s)
+   “For each architecture, we load the pretrained backbone with weights=’imagenet’ and include_top=False,
+   which removes the original ImageNet classifier. Then we freeze the backbone layers initially, so we only train
+   our custom classification head.”
+
+   “The classification head is identical for every model:
+   GlobalAveragePooling2D → Dense(256, ReLU) → Dropout(0.5) → Dense(num_classes, Softmax).
+   Keeping the head the same ensures we are comparing the backbone quality fairly.”
+
+3) Training configuration (45–60s)
+   “All models use the same hyperparameters:
+   - Image size: 224×224
+   - Batch size: 24
+   - Optimizer: Adam
+   - Loss: Sparse Categorical Crossentropy
+   - Epochs: [5 or 10 depending on your final run]
+   We also prefetch the dataset using tf.data.AUTOTUNE for faster training.”
+
+4) Why fairness matters (30–45s)
+   “If we changed hyperparameters per model, we wouldn’t know whether improvements came from the model or the training recipe.
+   So our experiment is controlled: same data, same split, same head, same optimizer, same epochs.”
+
+Handoff (10s)
+   “Next, [Person 3] will introduce the five pretrained CNN models we compared and what we expect from each.”
+
+
+PERSON 3 — MODELS (What each backbone is and why included)
+----------------------------------------------------------
+Target time: ~2.5–3.5 minutes
+Slides: Models list / brief architecture intuition, parameter/time expectations
+
+Script:
+1) Setup (15s)
+   “We compared five widely used pretrained CNN architectures to understand performance and efficiency trade-offs.”
+
+2) MobileNetV2 (30–40s)
+   “MobileNetV2 is designed for efficiency. It uses depthwise separable convolutions and inverted residual blocks.
+   It’s a strong choice when we care about speed and deployment on low-resource devices.”
+
+3) ResNet50 (30–45s)
+   “ResNet50 uses residual connections. Those skip connections allow deeper networks to train effectively.
+   It’s a strong general-purpose backbone and often a reliable baseline.”
+
+4) VGG16 (30–45s)
+   “VGG16 is a classic CNN with many stacked 3×3 convolutions. It’s conceptually simple but heavy in parameters.
+   It can perform well, but it’s typically slower and larger.”
+
+5) EfficientNetB0 (30–45s)
+   “EfficientNetB0 uses compound scaling to balance depth, width, and resolution.
+   It often provides strong accuracy for a relatively reasonable compute cost.”
+
+6) DenseNet121 (30–45s)
+   “DenseNet121 connects each layer to all subsequent layers, which encourages feature reuse and can improve gradient flow.
+   It can be very strong for classification tasks but may have different compute characteristics.”
+
+7) What we compare (20–30s)
+   “For each model, we evaluate not only validation accuracy but also macro and weighted F1, balanced accuracy, MCC,
+   training time, and parameter count. That way we capture both performance and practicality.”
+
+Handoff (10s)
+   “Next, [Person 4] will present the comparative results—tables, graphs, and key findings across all models.”
+
+
+PERSON 4 — RESULTS (Comparative study + visuals + confusion matrix)
+-------------------------------------------------------------------
+Target time: ~3.5–5 minutes
+Slides: comparison table, learning curves, time charts, confusion matrix / hardest classes
+
+Script:
+1) Lead-in (10s)
+   “Now I’ll summarize the results of training and evaluating all five models under the same setup.”
+
+2) Comparison table (60–90s)
+   “This table is the main summary. We report:
+   - Validation Accuracy
+   - Balanced Accuracy (helps when classes are imbalanced)
+   - Precision/Recall/F1 (weighted and macro)
+   - MCC (Matthews correlation coefficient, a strong overall metric)
+   - Training time
+   - Parameter count”
+
+   “From the table:
+   - Best accuracy: [MODEL] with [VAL ACC]
+   - Best balanced metrics (macro-F1 / MCC): [MODEL] with macro-F1 [VALUE] and MCC [VALUE]
+   - Fastest training: [MODEL] with time [VALUE]”
+
+3) Learning curves (45–75s)
+   “These plots show validation accuracy and validation loss over epochs for all models.
+   They help us see convergence speed and any overfitting patterns.
+   For example, if a model’s training accuracy rises but validation plateaus or loss increases, it may be overfitting.”
+
+4) Efficiency plots (45–60s)
+   “Here we compare training time. This is important for practical iteration and deployment constraints.
+   A model might be slightly more accurate but much slower, so the ‘best’ depends on the project requirements.”
+
+5) Confusion matrix / error insights (45–75s)
+   “The confusion matrix highlights where the model struggles.
+   The most common confusions are often between visually similar diseases or similar leaf textures.
+   This motivates future work such as fine-tuning, more data for hard classes, or improved augmentations.”
+
+Handoff (10s)
+   “Finally, [Person 5] will show our deployment-style frontend demo, then conclude with limitations and next steps.”
+
+
+PERSON 5 — FRONTEND DEMO + CONCLUSION + NEXT STEPS
+--------------------------------------------------
+Target time: ~3–4 minutes
+Slides: frontend screenshots, conclusion, future work
+
+Script:
+1) Frontend purpose (30–45s)
+   “To make the model usable, we built a simple frontend application where a user can upload a leaf image
+   and get a prediction instantly. The goal is to present this like a practical tool, not an ‘AI chat’ interface.”
+
+2) Demo flow (45–75s)
+   “The UI allows:
+   - Uploading an image
+   - Previewing the image
+   - Running inference using our trained model
+   - Displaying the top-k predictions with confidence in a bar chart”
+
+   “We load the saved model file and map outputs to labels using class_names.json, so the predicted index matches the correct class name.”
+
+3) Key takeaway (30–45s)
+   “Based on our experiments:
+   - Best accuracy model: [MODEL]
+   - Best balanced fairness model: [MODEL]
+   - Fastest/most efficient model: [MODEL]
+   In practice, our selection depends on whether we prioritize maximum accuracy or faster, lightweight deployment.”
+
+4) Limitations (30–45s)
+   “Some limitations to note:
+   - Our backbone was frozen; fine-tuning could improve performance.
+   - Training epochs were limited for the midterm.
+   - Real-world images can differ from dataset conditions (lighting, background, camera noise).”
+
+5) Future work (30–45s)
+   “Next steps:
+   - Fine-tune the best backbone with a smaller learning rate.
+   - Increase epochs with early stopping / learning-rate scheduling.
+   - Add stronger augmentations and evaluate on field images.
+   - Benchmark inference speed and memory for deployment.”
+
+Closing (10s)
+   “Thank you. We’re happy to take questions.”
+
+
+Quick one-line backups (if you’re short on time)
+-----------------------------------------------
+Person 1: “We’re classifying plant leaf diseases from images using a professor-provided dataset and a fair 5-model comparison.”
+Person 2: “We use ImageNet transfer learning with the same head and hyperparameters for all models to ensure fairness.”
+Person 3: “We compare MobileNetV2, ResNet50, VGG16, EfficientNetB0, DenseNet121 for accuracy vs efficiency trade-offs.”
+Person 4: “Results show [best model] leads in accuracy, while [best balanced] leads in macro-F1/MCC, and [fastest] is quickest.”
+Person 5: “We built a Streamlit demo for upload-and-predict, and our future work is fine-tuning and real-world testing.”
+

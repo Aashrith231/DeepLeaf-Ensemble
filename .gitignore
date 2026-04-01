@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Cursor
+.cursor/
+
+# Data / models (do not commit)
+PlantVillage/
+Plant_leave_diseases_dataset_with_augmentation/
+plant_disease_datasetv1/
+archive/
+dataset/
+data/
+datasets/
+*.h5
+*.keras
+*.ckpt
+*.onnx
+
+# Outputs
+results/
+outputs/
+logs/
+
